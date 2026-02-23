@@ -2,11 +2,9 @@
 
 **Using neural networks to solve problems in quantum physics that are too large to solve exactly.**
 
-A quantum system with N particles has 2^N possible states — even 40 particles would require more memory than exists on Earth. Instead of storing the full solution, this project trains a neural network to learn a compact representation of it. The network is optimized using Monte Carlo sampling and a physics-based loss function (energy minimization), with no training data needed — just the laws of quantum mechanics.
+A quantum system with N particles has 2^N possible states — even 40 particles would require more memory than exists on Earth to store. Instead of brute-forcing the full solution, this project trains a neural network to learn a compact representation of it. The network is optimized using Monte Carlo sampling and a physics-based loss function (energy minimization), with no training data needed — just the laws of quantum mechanics. The result: the neural network finds the correct answer to **< 0.01% error**, verified against exact solutions.
 
-The result: the neural network finds the correct quantum ground state to **< 0.01% error**, verified against exact solutions.
-
-Implements the method from [Carleo & Troyer, *Science* 355, 602 (2017)](https://doi.org/10.1126/science.aag2302).
+**Technical details:** The neural network is a Restricted Boltzmann Machine (RBM) used as a variational ansatz for quantum ground state wavefunctions. It is optimized via Variational Monte Carlo (VMC) with Stochastic Reconfiguration (a natural gradient method that uses the quantum geometric tensor). Tested on two 1D quantum spin models — the Transverse Field Ising Model and the Heisenberg XXX Model — and verified against exact diagonalization. Implements the method from [Carleo & Troyer, *Science* 355, 602 (2017)](https://doi.org/10.1126/science.aag2302).
 
 | System | VMC Energy | Exact Energy | Error |
 |--------|-----------|-------------|-------|
