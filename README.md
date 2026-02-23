@@ -1,6 +1,6 @@
 # Neural Quantum States
 
-Solving quantum many-body problems with neural networks. Implements the method from [Carleo & Troyer, *Science* 355, 602 (2017)](https://doi.org/10.1126/science.aag2302): using a Restricted Boltzmann Machine (RBM) as a variational ansatz for quantum ground state wavefunctions, optimized via Variational Monte Carlo (VMC).
+Solving quantum many-body problems with neural networks. Implements the method from [Carleo & Troyer, *Science* 355, 602 (2017)](https://doi.org/10.1126/science.aag2302), using a Restricted Boltzmann Machine (RBM) as a variational ansatz for quantum ground state wavefunctions, optimized via Variational Monte Carlo (VMC).
 
 **Results:** The RBM learns ground state wavefunctions to **< 0.01% error** compared to exact diagonalization, across two different quantum spin models.
 
