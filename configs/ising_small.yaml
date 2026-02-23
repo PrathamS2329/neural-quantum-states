@@ -1,0 +1,51 @@
+# configs/ising_small.yaml
+#
+# Quick benchmark: N=8 Transverse Field Ising Model at the quantum critical point
+# (Gamma/J = 1.0 is where the phase transition occurs)
+#
+# Expected runtime:    ~30 seconds on a modern laptop
+# Expected final E:    ~-9.76  (exact: -9.765 via exact diagonalization)
+# Expected error:      < 0.1%  with SR optimizer after 300 epochs
+#
+# This is the "hello world" run for the project. Use it to verify everything
+# works before attempting larger or more complex experiments.
+
+# ── Physical System ───────────────────────────────────────────────────────────
+system:
+  hamiltonian: ising    # 'ising' or 'heisenberg'
+  n_spins: 8            # N: number of physical spins in the 1D chain
+  J: 1.0                # ZZ coupling strength  (J > 0 is ferromagnetic for Ising)
+  gamma: 1.0            # Transverse field strength. gamma/J = 1.0 is the critical point.
+
+# ── Neural Network Ansatz ─────────────────────────────────────────────────────
+ansatz:
+  type: rbm             # Only 'rbm' is implemented (cnn is the stretch goal)
+  alpha: 2              # Hidden unit density: n_hidden = alpha * n_spins = 16
+  seed: 42              # Random seed for reproducibility
+
+# ── Monte Carlo Sampler ───────────────────────────────────────────────────────
+sampler:
+  n_samples: 500        # MCMC samples collected per epoch (more = lower variance)
+  n_burn: 200           # Initial Metropolis steps before training (chain equilibration)
+  sweep_size: null      # Steps between consecutive samples (null -> defaults to n_spins)
+                        # One sweep = one flip attempt per spin on average
+
+# ── Optimizer ─────────────────────────────────────────────────────────────────
+optimizer:
+  type: sr              # 'sr' (Stochastic Reconfiguration), 'adam', or 'sgd'
+                        # SR is strongly recommended — 5-10x faster convergence than SGD
+  learning_rate: 0.01   # Step size. SR is less sensitive to this than SGD.
+  epsilon: 0.01         # Tikhonov regularization for the S matrix (typical: 1e-4 to 1e-1)
+                        # Prevents instability when S is nearly singular.
+
+# ── Training Loop ─────────────────────────────────────────────────────────────
+training:
+  n_epochs: 300         # 300 epochs is enough for N=8 to converge with SR
+  checkpoint_every: 50  # Save parameter checkpoint every 50 epochs
+  log_every: 10         # Print one-line epoch summary every 10 epochs
+
+# ── Output ────────────────────────────────────────────────────────────────────
+output:
+  results_dir: results/ising_small/
+  run_exact: true       # Run exact diagonalization for comparison (feasible for N <= 20)
+  compute_observables: true   # Compute magnetization, correlations after training

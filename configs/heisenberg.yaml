@@ -1,0 +1,58 @@
+# configs/heisenberg.yaml
+#
+# 1D Heisenberg XXX Model: antiferromagnetic, full SU(2) rotational symmetry.
+# This run demonstrates that the SAME RBM + VMC framework generalizes to a
+# completely different physical system with zero changes to the training code.
+# That's the payoff for designing with abstract base classes.
+#
+# PHYSICS: The Heisenberg model has richer physics than Ising:
+#   - No classical phase transition (quantum fluctuations prevent long-range order)
+#   - Ground state is a spin liquid: a superposition of singlet pairs
+#   - Spin-spin correlations decay as a power law (not exponentially)
+#   - SU(2) symmetry means ⟨σˣ⟩ = ⟨σʸ⟩ = ⟨σᶻ⟩ (all equal, all ~0 by symmetry)
+#
+# Exact result (Bethe Ansatz, N → ∞):
+#   In our convention: E/N → -1.7724 J  (see heisenberg.py comments for convention)
+#
+# Expected runtime: ~60 seconds
+
+# ── Physical System ───────────────────────────────────────────────────────────
+system:
+  hamiltonian: heisenberg
+  n_spins: 8
+  J: 1.0                # J > 0: antiferromagnetic (standard convention)
+                        # J < 0: ferromagnetic (uncommon)
+
+# ── Neural Network Ansatz ─────────────────────────────────────────────────────
+ansatz:
+  type: rbm
+  alpha: 2              # alpha = 2 works well for N = 8 Heisenberg
+  seed: 42
+
+# ── Monte Carlo Sampler ───────────────────────────────────────────────────────
+sampler:
+  n_samples: 500
+  n_burn: 200
+  sweep_size: null
+  use_exchange: true    # Adjacent pair-swap proposals — essential for Heisenberg. Without
+                        # them, single spin flips change total Sz and get rejected once the
+                        # wavefunction peaks, freezing the chain permanently.
+
+# ── Optimizer ─────────────────────────────────────────────────────────────────
+optimizer:
+  type: sr
+  learning_rate: 0.01   # Standard SR learning rate — with the Marshall sign fix, the
+                        # optimizer can reach the quantum ground state without collapsing.
+  epsilon: 0.01         # Standard SR regularization (Tikhonov).
+
+# ── Training Loop ─────────────────────────────────────────────────────────────
+training:
+  n_epochs: 500         # More epochs needed — Heisenberg converges slower than Ising
+  checkpoint_every: 50
+  log_every: 10
+
+# ── Output ────────────────────────────────────────────────────────────────────
+output:
+  results_dir: results/heisenberg/
+  run_exact: true
+  compute_observables: true

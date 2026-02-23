@@ -17,9 +17,8 @@ env/
 .ipynb_checkpoints/
 *.ipynb_checkpoints
 
-# Results / outputs (large files)
-results/*.png
-results/*.npy
+# Results — ignore checkpoint weights, keep plots and data for reproducibility
+results/**/*.npy
 results/*.pt
 
 # IDE

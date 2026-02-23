@@ -1,0 +1,50 @@
+# configs/ising_large.yaml
+#
+# Serious run: N=16 Transverse Field Ising Model at the quantum critical point.
+# This is where the NQS starts to shine — exact diagonalization is still
+# feasible (2^16 = 65,536 states) but the Hilbert space is large enough
+# that the RBM's polynomial-parameter representation is genuinely impressive.
+#
+# Expected runtime:    ~10-20 minutes (depending on hardware)
+# Expected error:      < 0.5% with SR after 500 epochs
+#
+# Key comparison: the RBM has only alpha*N^2 + N + alpha*N = ~1100 parameters
+# but describes a system with 2^16 = 65,536 basis states.
+
+# ── Physical System ───────────────────────────────────────────────────────────
+system:
+  hamiltonian: ising
+  n_spins: 16
+  J: 1.0
+  gamma: 1.0            # At the critical point — hardest to converge, most interesting
+
+# ── Neural Network Ansatz ─────────────────────────────────────────────────────
+ansatz:
+  type: rbm
+  alpha: 4              # More hidden units for the larger, more entangled system
+                        # n_hidden = 4 * 16 = 64 hidden units, 1,136 total parameters
+  seed: 42
+
+# ── Monte Carlo Sampler ───────────────────────────────────────────────────────
+sampler:
+  n_samples: 1000       # More samples for better gradient estimates on larger system
+  n_burn: 500           # Longer initial burn-in for larger system
+  sweep_size: null      # Defaults to n_spins = 16
+
+# ── Optimizer ─────────────────────────────────────────────────────────────────
+optimizer:
+  type: sr
+  learning_rate: 0.005  # Slightly smaller lr for larger parameter space
+  epsilon: 0.01
+
+# ── Training Loop ─────────────────────────────────────────────────────────────
+training:
+  n_epochs: 500         # More epochs needed for larger system
+  checkpoint_every: 100
+  log_every: 10
+
+# ── Output ────────────────────────────────────────────────────────────────────
+output:
+  results_dir: results/ising_large/
+  run_exact: true       # 2^16 = 65536 — still fast with Lanczos (~5 seconds)
+  compute_observables: true
